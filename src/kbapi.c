@@ -2,17 +2,16 @@
 #include "skilobot.h"
 #include "kilolib.h"
 
-/* pointers to messaging functions 
+/* pointers to messaging functions
  * the kilobot program typically sets these in main()
  *
  * for simplicity we have only ONE set of these instead of
- * one for each bot. If all bots register the same functions, 
+ * one for each bot. If all bots register the same functions,
  * this will work.
  */
 message_tx_t kilo_message_tx = NULL;
 message_tx_success_t kilo_message_tx_success = NULL;
 message_rx_t kilo_message_rx = NULL;
-
 
 /* the clock variable. Counts ticks since beginning of the program.
  * Each bot really has it's own, but for now we have just one.
@@ -23,9 +22,9 @@ volatile uint32_t kilo_ticks = 0;
 // the simulator will copy a new UID here, before calling each bot
 uint16_t kilo_uid = 0;
 
-/* motor calibration values 
+/* motor calibration values
  * In the kilobots, these are different for each robot, and are stored in the EEPROM.
- * We model this in a very simple way in the simulator. The model is tuned so that 
+ * We model this in a very simple way in the simulator. The model is tuned so that
  * even if noise is set, on average the configured turn speed will be reached at an
  * activation value of 75.
  * Note that at this point straight movement is still independent of motor activation value.
@@ -34,7 +33,6 @@ uint8_t kilo_turn_left  = 75;
 uint8_t kilo_turn_right = 75;
 uint8_t kilo_straight_left = 7;
 uint8_t kilo_straight_right = 7;
-
 
 /* Each bot is required to call kilo_init.
  * In the simulator, we initialize the software RNG.
@@ -45,7 +43,6 @@ void kilo_init(void)
   self->seed=0xaa;        //same state as in the bot
   self->accumulator = 0;
 }
-
 
 /* In the kilobot, this function calls setup once.
  * Then it loops forever calling the function loop() and checks for control messages.
@@ -97,19 +94,18 @@ uint8_t estimate_distance(const distance_measurement_t *d)
   return d->high_gain;
 }
 
-// checksum for messages 
+// checksum for messages
 uint16_t message_crc(const message_t *msg)
 {
-  return 0; 
+  return 0;
   /* if we never check it we don't need to implement it.
    * otherwise copy from kilolib, message_crc.c and
-   * the crc functions from util/crc16.h 
+   * the crc functions from util/crc16.h
    */
 }
 
-
 /* delay is tricky to implement in the simulator
- * do as much as possible using the kilo_ticks variable instead 
+ * do as much as possible using the kilo_ticks variable instead
  */
 void _delay_ms(int ms)
 {
@@ -118,7 +114,7 @@ void _delay_ms(int ms)
 }
 
 // the kilobot API version of delay
-void delay (uint16_t ms) 	
+void delay (uint16_t ms)
 {
   return;
 }
@@ -151,7 +147,6 @@ void rand_seed(uint8_t seed)
   self->seed = seed;
 }
 
-
 float get_potential(int type)
 {
   kilobot* self = Me();
@@ -159,14 +154,14 @@ float get_potential(int type)
     {
     case POT_LINEAR:
       return self->x;
-    case POT_PARABOLIC: 
+    case POT_PARABOLIC:
       return pow(self->x, 2) + pow(self->y, 2);
     case POT_GRAVITY:
-      return 1.0 / hypot(self->x, self->y);      
+      return 1.0 / hypot(self->x, self->y);
     default:
       return 0;
     }
-  
+
 }
 
 // 10 bit measurement of ambient light
@@ -186,11 +181,23 @@ int16_t get_ambientlight()
   // constrain to interval [0,1023]
   if (l > 1023)
     l = 1023;
-  
+
   if (l < 0)
     l = 0;
-  
+
   return l;
+}
+
+// return the absolut position of the current robot
+pose_t get_pose()
+{
+  kilobot* self = Me();
+  pose_t pose;
+
+  pose.x = self->x;
+  pose.y = self->y;
+
+  return pose;
 }
 
 // 10 bit measurement of battery voltage.

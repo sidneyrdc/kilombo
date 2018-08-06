@@ -10,10 +10,10 @@
  * This is a version of kilolib.h bundled with the kilobot *simulator*.
  * It defines the same kilobot library API as the native kilolib,
  * with some simulator-specific additions.
- * 
- * 
- * 
- * The following is the original documentation. 
+ *
+ *
+ *
+ * The following is the original documentation.
  *
  * At its core the Kilobot Library library provides the function
  * kilo_init() to initialize the hardware of the kilobots, and the
@@ -45,14 +45,13 @@
 #include "message.h"
 #include "message_crc.h"
 
-
 /* Simulator specific definitions */
 
-/* Rename the bot's main function. Under the simulator, the real main 
+/* Rename the bot's main function. Under the simulator, the real main
    is in the simulator library */
 #define main bot_main
 
-/* Define the macro SIMULATOR to show that this program is compiled 
+/* Define the macro SIMULATOR to show that this program is compiled
    for the simulator */
 #define SIMULATOR
 
@@ -81,7 +80,6 @@ float get_potential(int type);
 
 /* Original kilolib definitions follow */
 
-
 #define RGB(r,g,b) (r&3)|(((g&3)<<2))|((b&3)<<4)
 #define TICKS_PER_SEC 31
 
@@ -102,6 +100,12 @@ typedef struct {
     int16_t high_gain; ///< High gain 10-bit signal-strength measurement.
 } distance_measurement_t;
 
+// datatype for position in 2D coordinates
+typedef struct {
+    double x;
+    double y;
+} pose_t;
+
 typedef void (*message_rx_t)(message_t *, distance_measurement_t *d);
 typedef message_t *(*message_tx_t)(void);
 typedef void (*message_tx_success_t)(void);
@@ -112,7 +116,7 @@ typedef void (*message_tx_success_t)(void);
  * This variable holds a 32-bit unsigned positive integer. This variable
  * is initialized to zero whenever the program run at the kilobot is
  * reset (or when the kilobot is first turned on). It is incremented
- * approximately 32 times per second, or once every 30ms. 
+ * approximately 32 times per second, or once every 30ms.
  *
  * @code
  *
@@ -266,7 +270,7 @@ extern message_rx_t kilo_message_rx;
  *         set_color(RGB(1,0,0));
  *         delay(100);
  *         set_color(RGB(0,0,0));
- *     
+ *
  *     }
  * }
  *
@@ -402,6 +406,12 @@ void rand_seed(uint8_t seed);
 int16_t get_ambientlight();
 
 /**
+ * @brief Return the current absolute position of the robot.
+ *
+ */
+pose_t get_pose();
+
+/**
  * @brief Read the amount of battery voltage.
  *
  * This function returns a 10-bit measurement (0 to 1023) that
@@ -442,7 +452,7 @@ int16_t get_temperature();
  *
  * When a motor transitions from being off (0% duty cycle) to being on
  * (> 10% duty cycle) it must first be turned on at full-speed for 15ms
- * to overcome the effects of static friction. 
+ * to overcome the effects of static friction.
  *
  * @see kilo_turn_left
  * @see kilo_turn_right
@@ -534,7 +544,7 @@ void set_color(uint8_t color);
  * configuring ports, setting up analog-to-digital converters,
  * registering system interrupts and the initializing the messaging
  * subsystem.
- * 
+ *
  * It is recommended that you call this function as early as possible
  * inside the `main` function of your program.
  */
@@ -582,3 +592,4 @@ void kilo_start(void (*setup)(void), void (*loop)(void));
 #endif
 
 #endif//__KILOLIB_H__
+
