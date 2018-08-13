@@ -104,6 +104,7 @@ typedef struct {
 typedef struct {
     double x;
     double y;
+    double yaw;
 } pose_t;
 
 typedef void (*message_rx_t)(message_t *, distance_measurement_t *d);

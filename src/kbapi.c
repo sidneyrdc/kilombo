@@ -196,6 +196,7 @@ pose_t get_pose()
 
   pose.x = self->x;
   pose.y = self->y;
+  pose.yaw = self->direction;
 
   return pose;
 }
